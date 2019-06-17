@@ -5,6 +5,7 @@ import requests
 import re
 import os
 from burnfile import burn
+
 h={
        'Host':'www.justdial.com',
        'User-Agent':'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:66.0) Gecko/20100101 Firefox/66.0',
@@ -142,6 +143,7 @@ class fetch_data(justdial,get_basic_details):
     def __init__(self,url):
         self.url=url
         self.soup=justdial.get_soup(self,url)
+        self.c='yu'
 
     @classmethod
     def fetch(cls,url):
@@ -149,27 +151,29 @@ class fetch_data(justdial,get_basic_details):
 
     def get_all_data(self):
      try:
+         datas=defaultdict()
          link=justdial.card_link(self)
          arr=[]
          row1=['COMPANY','ADDRESS','RATINGS','SITE']
-         
+         b=burn()
+         self.c=b
          for i in link:
             soup=justdial.get_soup(self,i)
             c=get_basic_details.company(self,soup)
             print(c)
-            #print('\n')
             address=get_basic_details.address(self,soup)
-           
-            #dd[c].append(address)
             web=get_basic_details.website(self,soup)
-            #print(web)
-            #print('\n')
             r=get_basic_details.rating(self,soup)
-
-            row=[c,address,r,web]
-            b=burn()
+            row=[c,address,r,web]           
             b.make_csv_file(row,'just.csv')
+            if not datas.get(c):
+                datas[c]=[]
+                datas[c].append(address)
+                datas[c].append(r)
+                datas[c].append(web)
             del row
+         return datas
+         
         
      except Exception as e:
             print(e)
@@ -181,10 +185,11 @@ class get10class(fetch_data):
     def get10all(self,url):
         try:
             #s=justdial.get_soup(url)
+            datas=defaultdict()
             soup=bs4.BeautifulSoup(requests.get(url,headers=h).text,'html.parser')
             ob=fetch_data.fetch(url)
-            ob.get_all_data()
-
+            d=ob.get_all_data()
+            datas.update(d)
             page=soup.findAll('div',attrs={'class':'jpag'})
             
             ar=[]
@@ -192,10 +197,11 @@ class get10class(fetch_data):
                 a=i.find_all('a')
                 ar.append(a)
             c=ar[0][1:-1]
-            for i in c:
-                
+            for i in c:                
                 ob=fetch_data.fetch(i.get('href'))
-                ob.get_all_data()
+                d=ob.get_all_data()
+                datas.update(d)
+            print(datas)
                 
         except Exception as e:
             print(e)
