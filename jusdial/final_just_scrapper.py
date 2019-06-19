@@ -1,4 +1,5 @@
 import bs4
+import scrnshot
 from collections import defaultdict
 import csv
 import requests
@@ -164,7 +165,11 @@ class fetch_data(justdial,get_basic_details):
             address=get_basic_details.address(self,soup)
             web=get_basic_details.website(self,soup)
             r=get_basic_details.rating(self,soup)
-            row=[c,address,r,web]           
+            m=scrnshot.make_screenshot(i)
+            m.scrnsh()
+            mob=m.make_txt('mob.png')
+            print(mob)
+            row=[c,address,r,web,mob]           
             b.make_csv_file(row,'just.csv')
             if not datas.get(c):
                 datas[c]=[]
@@ -185,7 +190,8 @@ class get10class(fetch_data):
     def get10all(self,url):
         try:
             #s=justdial.get_soup(url)
-            datas=defaultdict()
+            #datas=defaultdict()
+            datas={}
             soup=bs4.BeautifulSoup(requests.get(url,headers=h).text,'html.parser')
             ob=fetch_data.fetch(url)
             d=ob.get_all_data()

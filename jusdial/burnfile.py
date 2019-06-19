@@ -13,7 +13,7 @@ class burn:
             data=csv.writer(fl)
             data.writerow(row)
 
-    def makedict(self,company,address,r,web,):
+    def makedict(self,company,address,r,web,mob):
         
         if not self.data.get(company):
             self.data[company]=[]
@@ -21,6 +21,7 @@ class burn:
         #print(address)
         self.data[company].append(r)
         self.data[company].append(web)
+        self.data[company].append(mob)
         return self.data
        
 
