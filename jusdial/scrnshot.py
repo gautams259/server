@@ -1,3 +1,4 @@
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from selenium import webdriver
 from PIL import Image
 import pytesseract
@@ -5,11 +6,16 @@ import os
 
 class make_screenshot:
     def __init__(self,url):
-        self.driver=webdriver.Firefox()
+        #self.driver=webdriver.Firefox()
         self.url=url
+    
+
 
     def scrnsh(self):#tel ttel
         try:
+            options = FirefoxOptions()
+            options.add_argument("--headless")
+            self.driver = webdriver.Firefox(options=options)
             self.driver.get(self.url)
             img=self.driver.find_element_by_class_name('telnowpr').screenshot_as_png
             with open('mob.png','wb') as f:
@@ -23,8 +29,6 @@ class make_screenshot:
         try:
             t=pytesseract.image_to_string('mob.png', config='--psm 7')
             #textract.process('image.jpg', encoding='ascii',method='tesseract')
-            #os.system("rm mob.png")
-            print(t)
             return t
         except Exception as e:
             print(e)

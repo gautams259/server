@@ -5,7 +5,7 @@ import csv
 import requests
 import re
 import os
-from burnfile import burn
+from burnfile import burn,write_to_gsheet
 
 h={
        'Host':'www.justdial.com',
@@ -170,6 +170,7 @@ class fetch_data(justdial,get_basic_details):
             mob=m.make_txt('mob.png')
             print(mob)
             row=[c,address,r,web,mob]           
+            write_to_gsheet(row)
             b.make_csv_file(row,'just.csv')
             if not datas.get(c):
                 datas[c]=[]
