@@ -1,3 +1,5 @@
+# -*- : utf-8 -*-
+
 import bs4
 import scrnshot
 from collections import defaultdict
@@ -5,7 +7,7 @@ import csv
 import requests
 import re
 import os
-from burnfile import burn,write_to_gsheet
+from burnfile import burn
 
 h={
        'Host':'www.justdial.com',
@@ -64,12 +66,16 @@ class get_basic_details:
     def rating(self,soup):
         span=soup.find('span',attrs={'class':'rating'})
         s=span.find('span',attrs={'class':'value-titles'})
-        return s.text
+        if s:
+            return s.text
 
     def company(self,soup):
         c=soup.find('div',attrs={'class':'col-sm-9 col-xs-12'})
         company=c.find('span',attrs={'class':'fn'})
-        return company.text
+        if company:
+            return company.text
+        else:
+            print("didn't found company name")
 
     def address(self,soup):
         span=soup.findAll('span',attrs={'class':'adrstxtr'})
@@ -133,8 +139,8 @@ class get_basic_details:
                     pass
                 else : 
                     e=e+em+','
-            return e
-            
+            if e:
+                return e
         except Exception as e:
             pass
         
@@ -151,7 +157,7 @@ class fetch_data(justdial,get_basic_details):
         return cls(url)
 
     def get_all_data(self):
-     try:
+        try:
          datas=defaultdict()
          link=justdial.card_link(self)
          arr=[]
@@ -161,7 +167,7 @@ class fetch_data(justdial,get_basic_details):
          for i in link:
             soup=justdial.get_soup(self,i)
             c=get_basic_details.company(self,soup)
-            print(c)
+            print(u"company name==>  {} ".format(c))
             address=get_basic_details.address(self,soup)
             web=get_basic_details.website(self,soup)
             r=get_basic_details.rating(self,soup)
@@ -170,7 +176,6 @@ class fetch_data(justdial,get_basic_details):
             mob=m.make_txt('mob.png')
             print(mob)
             row=[c,address,r,web,mob]           
-            write_to_gsheet(row)
             b.make_csv_file(row,'just.csv')
             if not datas.get(c):
                 datas[c]=[]
@@ -178,10 +183,9 @@ class fetch_data(justdial,get_basic_details):
                 datas[c].append(r)
                 datas[c].append(web)
             del row
-         return datas
-         
+         return datas 
         
-     except Exception as e:
+        except Exception as e:
             print(e)
             
 class get10class(fetch_data):
@@ -216,6 +220,9 @@ class get10class(fetch_data):
 
 #url='https://www.justdial.com/Chennai/B-Tech-Colleges/nct-11181168'
 url='https://www.justdial.com/Bangalore/Software-Companies/nct-10443565'
+url='https://www.justdial.com/Patna/Jewellery-Showrooms/nct-10282098'
+#url='https://www.justdial.com/Patna/Institutes/nct-10268288'
+url='https://www.justdial.com/Delhi/Dentists/nct-10156331'
 ob=fetch_data(url)
 #ob.get_all_data()
 g=get10class()

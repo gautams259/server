@@ -5,15 +5,15 @@ from oauth2client.service_account import ServiceAccountCredentials
 from oauth2client import file, client, tools
 import gspread
 
-SCOPES = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-store = file.Storage('token.json')
-credentials = store.get()
-if not credentials or credentials.invalid:
-    flow = client.flow_from_clientsecrets('client.json', SCOPES)
-    credentials = tools.run_flow(flow, store)
+#SCOPES = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
+#store = file.Storage('token.json')
+#credentials = store.get()
+#if not credentials or credentials.invalid:
+#    flow = client.flow_from_clientsecrets('client.json', SCOPES)
+#    credentials = tools.run_flow(flow, store)
 
-service = gspread.authorize(credentials)
-sheet=service.open('data').sheet1
+#service = gspread.authorize(credentials)
+#sheet=service.open('data').sheet1
 
 def write_to_gsheet(l):
     sheet.update_acell('A1','Company')
@@ -21,6 +21,7 @@ def write_to_gsheet(l):
     sheet.update_acell('C1','Rating')
     sheet.update_acell('D1','Web')
     sheet.update_acell('D1','Mob')
+
 class burn:
     def __init__(self):
         self.data=defaultdict()
